@@ -1,0 +1,34 @@
+name:		scrollbuffer
+category:	Data
+version:	0.1
+license:	GPL-3
+cabal-version:  >= 1.8
+license-file:   LICENSE
+author:		Greg Hale
+maintainer:	Greg Hale <imalsogreg@gmail.com>
+stability:	experimental
+homepage:	http://github.com/ImAlsoGreg/scrollbuffer
+bug-reports:    http://github.com/ImAlsoGreg/scrollbuffer/issues
+copyright:      Copyright (C) 2013 Greg Hale
+build-type:	Simple
+synopsis:	Fixed-length circular buffer based on Data.Sequence
+description:
+	Thin wrapper over a sequence.  Data are added to a sequence one 
+	element at a time, or an entire other sequence can be added at
+	once.  Newest data is kept at the right end, and new elements 
+	push old ones off the back.  Also keeps a 'cursor' indicating a 
+	fixed timepoint in the buffer: usefull for displaying the 
+	sequence in "EKG" overwriting style.
+
+extra-source-files:
+  .gitignore
+  README.md
+
+source-repository head
+  type: git
+  location: git://github.com/ImAlsoGreg/scrollbuffer.git
+
+library
+  hs-source-dirs:   src
+  build-depends:    base, containers
+  exposed-modules:  Data.ScrollBuffer
