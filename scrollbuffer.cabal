@@ -30,5 +30,6 @@ source-repository head
 
 library
   hs-source-dirs:   src
-  build-depends:    base, containers
+  build-depends:    base < 4.7, 
+                    containers < 1.0
   exposed-modules:  Data.ScrollBuffer
