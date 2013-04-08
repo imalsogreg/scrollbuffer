@@ -23,6 +23,7 @@ description:
 extra-source-files:
   .gitignore
   README.md
+  tests/test.hs
 
 source-repository head
   type: git
