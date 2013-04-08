@@ -1,3 +1,62 @@
+{- | 
+A purely functional fixed-length forgetful buffer.
+
+This is meant to be used where a circular list for
+streaming data would normally be used in an imperative
+language.
+
+Example use-case: A film crew trying to take high-speed 
+video of sharks hunting for seals.  The camera operator 
+doesn't know in advance when a shark attack will happen, 
+in order to trigger recording; and the camera can't store 
+more than 10 seconds (10 thousand frames) at a time. So 
+we store the frames in a buffer with limited memory, and 
+rely on the camera operator to press a trigger button as 
+soon as possible after the shark attack.  The trigger 
+moves the frames in the camera's memory onto the hard disk.
+
+          
+>                 Shark attach           
+>                 |          | <- Operator's reaction time
+>                 V__________Trigger 
+>                 |          | 
+>Data:   NNNNNNNNNSSSSSSSSSSNNNNN
+>Buffer: .....NNNNSSSSSSSSSSNN
+>             |______________| <- Buffer's memory
+>        |   | 
+>        |___|  <- Past (forgotten) data
+
+ScrollBuffer forgetfully buffers data using Data.Sequence.  
+Additionally, it keeps track of a cursor position that
+corresponds to one point in time.
+
+>Data     0 1 2 3 4 5 6 7     |
+>Buffer       2 3 4 5 6 7     |  EKG view: 3 4 5 6 7 2
+>Cursor         |             |
+>                             |
+>Add one element: 8           |
+>                             |
+>Data     0 1 2 3 4 5 6 7 8   |
+>Buffer         3 4 5 6 7 8   |  EKG view: 3 4 5 6 7 8
+>Cursor         |             |
+>                             |
+>Add one element: 9           |
+>                             |
+>Data     0 1 2 3 4 5 6 7 8 9 |
+>Buffer           4 5 6 7 8 9 |  EKG view: 9 4 5 6 7 8
+>Cursor                     | |
+
+Press the trigger and capture the N most recent samples
+using the ~~| operator.
+
+~~| Doesn't involve the cursor.  The cursor is used as
+a break point for 'EKG-style' scrolling display with
+new data appearing to overwrite old (although this
+is not the pattern in which data is written in the
+underlying datastructure).
+
+-}
+
 module Data.ScrollBuffer ( 
   
   -- * ScrollBuffer
