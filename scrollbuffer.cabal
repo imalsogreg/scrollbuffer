@@ -1,6 +1,6 @@
 name:		scrollbuffer
 category:	Data
-version:	0.1
+version:	0.2
 license:	GPL-3
 cabal-version:  >= 1.8
 license-file:   LICENSE
@@ -33,3 +33,15 @@ library
   build-depends:    base < 4.7, 
                     containers < 1.0
   exposed-modules:  Data.ScrollBuffer
+
+test-suite scrollbuffer-tests
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   tests
+  main-is:	    tests.hs
+  build-depends:    base >= 4.3 && <= 4.7  
+                  , scrollbuffer
+                  , test-framework >= 0.4
+                  , test-framework-quickcheck2 >= 0.2
+                  , QuickCheck >= 2.4
+                  , test-framework-hunit
+                  , HUnit

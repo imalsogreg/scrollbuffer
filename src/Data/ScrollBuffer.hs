@@ -1,7 +1,7 @@
 module Data.ScrollBuffer ( 
   
   -- * ScrollBuffer
-  ScrollBuffer,
+  ScrollBuffer(..),
   
   -- * Construction
   fromList, fromSeq, 
@@ -31,17 +31,22 @@ import qualified Prelude as P
 -- |Scrolling buffers based on Data.Sequence, for adding new data while forgetting old
 data ScrollBuffer a = ScrollBuffer (Seq.Seq a) Int
 
--- This follows the monoid laws.  Is it useful
+-- This follows the monoid laws.  Is it useful?
 instance M.Monoid (ScrollBuffer a) where
   mempty = fromList []
-  sb1 `mappend` sb2@(ScrollBuffer s2 _)
+  sb1@(ScrollBuffer s1 i1) `mappend` sb2@(ScrollBuffer s2 i2)
     | null sb1  = sb2
     | null sb2  = sb1
-    | otherwise = advanceSeq sb1 s2
+    | otherwise = ScrollBuffer (M.mappend s1 s2) (i1 + i2)
+
+instance (Eq a) => Eq (ScrollBuffer a) where
+  (ScrollBuffer s1 i1) == (ScrollBuffer s2 i2) = s1 == s2 && i1 == i2
 
 instance (Show a) => Show (ScrollBuffer a) where
   show (ScrollBuffer s cursor) = "[" P.++ showSBString P.++ "] ind: " P.++ show cursor
-    where printElem e ind = if ind == cursor then "*" else show e
+    where printElem e ind = if ind == cursor 
+                            then (":" P.++ show e P.++ ":" )
+                            else show e
           showSBList      = zipWith printElem (Fold.toList s) [0..]
           showSBString    = L.intercalate ", " showSBList
                             
