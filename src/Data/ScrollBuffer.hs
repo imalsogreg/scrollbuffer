@@ -1,4 +1,4 @@
-{- | 
+{- |
 A purely functional fixed-length forgetful buffer.
 
 This is meant to be used where a circular list for
@@ -16,19 +16,23 @@ soon as possible after the shark attack.  The trigger
 moves the frames in the camera's memory onto the hard disk.
 
           
->                 Shark attach           
->                 |          | <- Operator's reaction time
->                 V__________Trigger 
->                 |          | 
->Data:   NNNNNNNNNSSSSSSSSSSNNNNN
->Buffer: .....NNNNSSSSSSSSSSNN
+>           Shark_   ... reaction time ...
+>                 |          
+>                 |          |-- Trigger 
+>                 V          V 
+>Data:   nnnnnnnnnSSSSSSSSSSnn
+>Buffer: .....nnnnSSSSSSSSSSnn
 >             |______________| <- Buffer's memory
 >        |   | 
 >        |___|  <- Past (forgotten) data
+>
+>  n: Nothing happening   S: Shark frame
 
 ScrollBuffer forgetfully buffers data using Data.Sequence.  
 Additionally, it keeps track of a cursor position that
-corresponds to one point in time.
+corresponds to one point in time.  When that time falls
+off the back end of the buffer, the cursor jumps to the
+front.
 
 >Data     0 1 2 3 4 5 6 7     |
 >Buffer       2 3 4 5 6 7     |  EKG view: 3 4 5 6 7 2
@@ -49,11 +53,35 @@ corresponds to one point in time.
 Press the trigger and capture the N most recent samples
 using the ~~| operator.
 
-~~| Doesn't involve the cursor.  The cursor is used as
-a break point for 'EKG-style' scrolling display with
-new data appearing to overwrite old (although this
-is not the pattern in which data is written in the
-underlying datastructure).
+~~| Doesn't involve the cursor.  It always grabs the
+N most recently acquired samples. The cursor is used 
+as a break point for 'EKG-style' scrolling display 
+with new data appearing to overwrite old (although 
+this is not the pattern in which data is written in 
+the underlying datastructure).
+
+Another use case: streaming data from a neuron. We can't
+save it all, instead we want to keep a snippet around
+particular events.  Scrolling buffer with limited memory
+allows that.
+
+>    Threshold crossing___
+>                         |                 
+>                         V /\                
+>                          /  |               
+>     .  .  .  .  .  .  . *  . \  .  .  .  .  .  .   
+>                         |     |             
+>           _  __        _/      \        /\    
+>----------/-\/--\-----_/--------|------_---\_   --  
+>   __/\__/       \/\_/           \    /      \_/  
+>                                  \__/           
+>   fffffffffRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+>                                                       
+>            |<-- Event with context -->|              
+>
+>   f: Past data    R: Data still in the buffer         
+
+
 
 -}
 
